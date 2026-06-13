@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Consulta RUC y REMYPE</title>
+<style>
+  :root {
+    --rojo: #C0392B;
+    --rojo-claro: #E74C3C;
+    --azul: #1A3A6B;
+    --azul-medio: #2E5D9E;
+    --blanco: #FFFFFF;
+    --gris: #F4F6F9;
+    --gris-medio: #BDC3C7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--gris);
+    color: var(--azul);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .header {
+    width: 100%;
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-medio) 100%);
+    border-bottom: 6px solid var(--rojo);
+    text-align: center;
+    padding: 36px 16px 28px;
+  }
+  .header h1 {
+    color: var(--blanco);
+    font-size: 28px;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .header p {
+    color: rgba(255,255,255,0.85);
+    margin-top: 8px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  .container {
+    width: 100%;
+    max-width: 520px;
+    padding: 32px 20px;
+  }
+  .card {
+    background: var(--blanco);
+    border-radius: 12px;
+    padding: 28px 24px;
+    box-shadow: 0 2px 14px rgba(26,58,107,0.10);
+    border: 1px solid rgba(26,58,107,0.08);
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  input[type="text"] {
+    width: 100%;
+    height: 48px;
+    border: 2px solid var(--gris-medio);
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--azul);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input[type="text"]:focus {
+    border-color: var(--azul-medio);
+    box-shadow: 0 0 0 3px rgba(46,93,158,0.15);
+  }
+  input.invalido {
+    border-color: var(--rojo);
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
+  }
+  .btn-generar {
+    width: 100%;
+    height: 50px;
+    margin-top: 18px;
+    background: linear-gradient(135deg, var(--rojo) 0%, var(--rojo-claro) 100%);
+    color: var(--blanco);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all .2s;
+    box-shadow: 0 3px 10px rgba(192,57,43,0.35);
+  }
+  .btn-generar:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(192,57,43,0.45);
+  }
+  .btn-generar:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+  .progreso-wrap {
+    margin-top: 22px;
+    display: none;
+  }
+  .progreso-wrap.visible { display: block; }
+  .progreso-track {
+    height: 10px;
+    background: var(--gris);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--gris-medio);
+  }
+  .progreso-fill {
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, var(--azul) 0%, var(--azul-medio) 50%, var(--rojo-claro) 100%);
+    border-radius: 10px;
+    animation: slide 1.4s ease-in-out infinite;
+  }
+  @keyframes slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+  }
+  .progreso-label {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555E6B;
+    text-align: center;
+  }
+  .mensaje {
+    margin-top: 18px;
+    font-size: 13px;
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: none;
+  }
+  .mensaje.visible { display: block; }
+  .mensaje.error { background: #FCEBEB; color: var(--rojo); border: 1px solid #F09595; }
+  .mensaje.ok { background: #EAF3DE; color: #27500A; border: 1px solid #C0DD97; }
+  .footer {
+    margin-top: auto;
+    padding: 18px;
+    font-size: 12px;
+    color: #888780;
+    text-align: center;
+  }
+  .info {
+    font-size: 12px;
+    color: #888;
+    margin-top: 14px;
+    line-height: 1.6;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>CONSULTA RUC Y REMYPE</h1>
+  <p>Desarrollado por JHurtado</p>
+</div>
+
+<div class="container">
+  <div class="card">
+    <label for="rucInput">Numero de RUC (11 digitos)</label>
+    <input type="text" id="rucInput" maxlength="11" inputmode="numeric" placeholder="Ej: 20524324726" autocomplete="off" />
+
+    <button class="btn-generar" id="btnGenerar">GENERAR WORD</button>
+
+    <div class="progreso-wrap" id="progresoWrap">
+      <div class="progreso-track"><div class="progreso-fill"></div></div>
+      <div class="progreso-label" id="progresoLabel">Consultando SUNAT y REMYPE, esto puede tardar 30-60 segundos...</div>
+    </div>
+
+    <div class="mensaje" id="mensaje"></div>
+
+    <div class="info">
+      Se generaran 4 capturas de pantalla en alta resolucion (Consulta RUC,
+      Trabajadores, Representantes Legales y REMYPE) y se descargara un
+      documento Word con los resultados.
+    </div>
+  </div>
+</div>
+
+<div class="footer">Consulta RUC y REMYPE &middot; Desarrollado por JHurtado</div>
+
+<script>
+  // URL del backend Playwright (ajustar tras el despliegue en Render/Railway)
+  const API_URL = 'https://TU-BACKEND.onrender.com/api/generar';
+
+  const rucInput = document.getElementById('rucInput');
+  const btn = document.getElementById('btnGenerar');
+  const progresoWrap = document.getElementById('progresoWrap');
+  const mensaje = document.getElementById('mensaje');
+
+  rucInput.addEventListener('input', () => {
+    rucInput.value = rucInput.value.replace(/\D/g, '').slice(0, 11);
+    rucInput.classList.remove('invalido');
+  });
+
+  rucInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') generar();
+  });
+
+  btn.addEventListener('click', generar);
+
+  async function generar() {
+    const ruc = rucInput.value.trim();
+    mensaje.className = 'mensaje';
+    mensaje.textContent = '';
+
+    if (ruc.length !== 11) {
+      rucInput.classList.add('invalido');
+      mostrarMensaje('error', 'El RUC debe tener exactamente 11 digitos.');
+      rucInput.focus();
+      return;
+    }
+
+    btn.disabled = true;
+    rucInput.disabled = true;
+    progresoWrap.classList.add('visible');
+
+    try {
+      const resp = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ruc }),
+      });
+
+      if (!resp.ok) {
+        let texto = 'Ocurrio un error al generar el documento.';
+        try {
+          const data = await resp.json();
+          if (data && data.error) texto = data.error;
+        } catch {}
+        mostrarMensaje('error', texto);
+        return;
+      }
+
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Consulta_RUC_${ruc}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+      mostrarMensaje('ok', `Documento generado: Consulta_RUC_${ruc}.docx`);
+
+    } catch (err) {
+      mostrarMensaje('error', 'No se pudo conectar con el servidor. Intenta nuevamente.');
+    } finally {
+      btn.disabled = false;
+      rucInput.disabled = false;
+      progresoWrap.classList.remove('visible');
+    }
+  }
+
+  function mostrarMensaje(tipo, texto) {
+    mensaje.className = `mensaje visible ${tipo}`;
+    mensaje.textContent = texto;
+  }
+</script>
+
+</body>
+</html>

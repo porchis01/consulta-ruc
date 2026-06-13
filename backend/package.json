@@ -1,0 +1,20 @@
+{
+  "name": "sunafil-consulta-backend",
+  "version": "1.0.0",
+  "description": "Backend Playwright que captura SUNAT y REMYPE y genera un Word",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "postinstall": "npx playwright install --with-deps chromium"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "playwright": "^1.44.0",
+    "docx": "^8.5.0",
+    "image-size": "^1.1.1"
+  }
+}
