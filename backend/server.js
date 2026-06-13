@@ -30,6 +30,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Backend activo ✔');
+});
+
 const PORT = process.env.PORT || 3000;
 
 // ── Endpoint principal ──────────────────────────────────────────────────────
