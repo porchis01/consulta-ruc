@@ -4,7 +4,7 @@
   "description": "Backend Playwright que captura SUNAT y REMYPE y genera un Word",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=18"
