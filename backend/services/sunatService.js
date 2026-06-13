@@ -49,7 +49,6 @@ async function consultarSunat(ruc, carpetaTemp) {
   try {
     // ── Cargar portal ────────────────────────────────────────────────────
     await page.goto(URL_SUNAT, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle', { timeout: TIMEOUT_NAV }).catch(() => {});
     await page.waitForTimeout(1500);
 
     // ── Ingresar RUC ─────────────────────────────────────────────────────
